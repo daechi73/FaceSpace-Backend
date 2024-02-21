@@ -34,11 +34,12 @@ exports.user_sign_up = [
     .withMessage("Username must be longer than 4 letters")
     .isLength({ max: 30 })
     .withMessage("Username must be less than 30 letters"),
-
   body("password")
     .trim()
     .exists({ values: "falsy" })
     .withMessage("You must enter a password")
+    .isLength({ min: 8 })
+    .withMessage("Password must be longer than 8 letters")
     .isLength({ max: 100 })
     .withMessage("Password must be less than 50 letters"),
   body("name")
