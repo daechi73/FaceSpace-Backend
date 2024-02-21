@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
   user_name: { type: String, required: true, maxLength: 30 },
-  name: { type: String, required: true, maxLength: 30 },
   password: { type: String, required: true, maxLength: 100 },
+  name: { type: String, required: true, maxLength: 30 },
   email: { type: String, required: true, maxLength: 40 },
   bio: { type: String, maxLength: 400 },
   friends: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
