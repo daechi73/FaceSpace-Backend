@@ -9,23 +9,16 @@ exports.user_get_users = asyncHandler(async (req, res, next) => {
   else res.send("No users to show");
 });
 
-exports.user_signIn_post = [
+exports.user_sign_in = [
   asyncHandler(async (req, res, next) => {
     passport.authenticate("local", (err, user, options) => {
       if (!user) {
-        res.render("sign-in-get", {
-          title: "Sign-in",
-          errors: options.message,
-        });
-      } //else next();
-      else {
-        req.login(user, function (err) {
-          if (err) {
-            return next(err);
-          }
-          return res.json("");
-        });
+        return res.json("Log in failed, try again");
       }
+      req.login(user, (err) => {
+        if (err) return next(err);
+        return res.json({ status: "success", user: user });
+      });
     })(req, res, next);
   }),
 ];
