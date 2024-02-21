@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/User");
+const passport = require("passport");
 const { body, validationResult } = require("express-async-handler");
 const Hash = require("../public/javascript/Hash.js");
 
@@ -12,6 +13,7 @@ exports.user_get_users = asyncHandler(async (req, res, next) => {
 exports.user_sign_in = [
   asyncHandler(async (req, res, next) => {
     passport.authenticate("local", (err, user, options) => {
+      console.log("here3");
       if (!user) {
         return res.json("Log in failed, try again");
       }
