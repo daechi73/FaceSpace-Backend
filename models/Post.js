@@ -14,7 +14,9 @@ PostSchema.virtual("url").get(function () {
   return `/post/${this._id}`;
 });
 PostSchema.virtual("dated_posted_formatted").get(function () {
-  return DateTime.fromJSDate(this.due_back).toLocaleString(DATETIME_MED); // format 'YYYY-MM-DD'
+  return DateTime.fromJSDate(this.due_back).toLocaleString(
+    DateTime.DATETIME_MED
+  ); // format 'YYYY-MM-DD'
 });
 
 PostSchema.set("toJSON", { virtuals: true });
