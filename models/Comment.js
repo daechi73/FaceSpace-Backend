@@ -22,7 +22,7 @@ const CommentSchema = new Schema({
 CommentSchema.set("toJSON", { virtuals: true });
 
 CommentSchema.virtual("url").get(function () {
-  return `/comment/${this._id}`;
+  return `/comments/${this._id}`;
 });
 CommentSchema.virtual("dated_posted_formatted").get(function () {
   return DateTime.fromJSDate(this.due_back).toLocaleString(DATETIME_MED); // format 'YYYY-MM-DD'

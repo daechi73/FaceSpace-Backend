@@ -11,7 +11,7 @@ const PostSchema = new Schema({
 });
 
 PostSchema.virtual("url").get(function () {
-  return `/post/${this._id}`;
+  return `/posts/${this._id}`;
 });
 PostSchema.virtual("dated_posted_formatted").get(function () {
   return DateTime.fromJSDate(this.due_back).toLocaleString(
