@@ -9,7 +9,18 @@ exports.user_get_users = asyncHandler(async (req, res, next) => {
   if (users) res.send(Object.values(users));
   else res.send("No users to show");
 });
-
+exports.user_get_user_detail = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.params.id)
+    .populate("friends")
+    .populate("friend_requests")
+    .populate("posts");
+  if (user === null) {
+    const err = new Error("User not found");
+    err.status = 404;
+    return next(err);
+  }
+  res.json({ status: "success", user: user });
+});
 exports.user_sign_in = [
   asyncHandler(async (req, res, next) => {
     passport.authenticate("local", (err, user, options) => {
