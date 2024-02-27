@@ -33,8 +33,7 @@ exports.posts_post_posts = [
       posted_user: req.body.user,
       post_content: req.body.post,
     });
-    console.log(post);
     await post.save();
-    res.json({ status: "success", msg: "Post successfully added" });
+    return res.json({ status: "success", msg: "Post successfully added" });
   }),
 ];
