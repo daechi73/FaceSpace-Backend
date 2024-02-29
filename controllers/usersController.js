@@ -11,6 +11,7 @@ exports.user_get_users = asyncHandler(async (req, res, next) => {
 });
 exports.user_get_user_detail = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id)
+    .select("-password")
     .populate("friends")
     .populate("friend_requests")
     .populate("posts");
@@ -19,6 +20,7 @@ exports.user_get_user_detail = asyncHandler(async (req, res, next) => {
     err.status = 404;
     return next(err);
   }
+
   res.json({ status: "success", user: user });
 });
 exports.user_sign_in = [
@@ -30,7 +32,11 @@ exports.user_sign_in = [
       }
       req.login(user, (err) => {
         if (err) return next(err);
-        return res.json({ status: "success", user: user });
+
+        return res.json({
+          status: "success",
+          user: { ...user._doc, password: "*********" },
+        });
       });
     })(req, res, next);
   }),
