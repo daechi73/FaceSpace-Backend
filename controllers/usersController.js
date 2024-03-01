@@ -41,7 +41,14 @@ exports.user_sign_in = [
     })(req, res, next);
   }),
 ];
-
+exports.user_sign_out = asyncHandler(async (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.json({ status: "success", user: req.user });
+  });
+});
 exports.user_sign_up = [
   body("username")
     .trim()
