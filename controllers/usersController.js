@@ -93,6 +93,7 @@ exports.user_sign_up = [
         errors: errors.array(),
       });
     }
+    user.password = await Hash(user.password);
     await user.save();
     res.json({ status: "success", user: user });
   }),
