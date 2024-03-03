@@ -6,8 +6,19 @@ const Hash = require("../public/javascript/Hash.js");
 
 exports.user_get_users = asyncHandler(async (req, res, next) => {
   const users = await User.find().exec();
-  if (users) res.send(Object.values(users));
-  else res.send("No users to show");
+  if (users)
+    res.json({
+      status: "success",
+      users: users,
+    });
+  else res.json("No users to show");
+});
+exports.user_get_other_users = asyncHandler(async (req, res, next) => {
+  const users = await User.find()
+    .where("user_name")
+    .ne(req.body.user.user_name);
+  if (users) res.json({ status: "success", users: users });
+  else res.json({ status: "faliure" });
 });
 exports.user_get_user_detail = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id)
@@ -26,13 +37,12 @@ exports.user_get_user_detail = asyncHandler(async (req, res, next) => {
 exports.user_sign_in = [
   asyncHandler(async (req, res, next) => {
     passport.authenticate("local", (err, user, options) => {
-      console.log("here3");
       if (!user) {
         return res.json("Log in failed, try again");
       }
       req.login(user, (err) => {
         if (err) return next(err);
-
+        console.log(req.user);
         return res.json({
           status: "success",
           user: { ...user._doc, password: "*********" },
