@@ -25,7 +25,8 @@ exports.user_get_user_detail = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id)
     .select("-password")
     .populate("friends")
-    .populate("friend_requests")
+    .populate("friend_requests_incoming")
+    .populate("friend_requests_outgoing")
     .populate("posts");
   if (user === null) {
     const err = new Error("User not found");
