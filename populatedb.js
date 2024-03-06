@@ -45,9 +45,6 @@ async function userCreate(
     password: await hashedPass2(password),
     email: email,
     bio: bio,
-    friends: friends,
-    friend_requests: friend_requests,
-    posts: posts,
   });
 
   await user.save();
@@ -78,8 +75,32 @@ async function createUsers() {
       "daechi73",
       "J",
       "98527852",
-      "daechi73@daechi73.com",
+      "daechi73@gmail.com",
       "Hi I'm J!"
+    ),
+    userCreate(
+      1,
+      "newUser",
+      "J",
+      "98527852",
+      "newUser@gmail.com",
+      "Hi I'm newUser!"
+    ),
+    userCreate(
+      2,
+      "newUser2",
+      "J",
+      "98527852",
+      "newUser2@gmail.com",
+      "Hi I'm newUser2!"
+    ),
+    userCreate(
+      3,
+      "newUser3",
+      "J",
+      "98527852",
+      "newUser3@gmail.com",
+      "Hi I'm newUser!"
     ),
   ]);
 }
