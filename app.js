@@ -40,14 +40,22 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.json());
 
-app.use(session({ secret: "cats", resave: false, saveUninitialized: true }));
+app.use(
+  session({
+    secret: "cats",
+    resave: false,
+    saveUninitialized: true,
+    cookies: {},
+  })
+);
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
   // Request methods you wish to allow
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -56,11 +64,11 @@ app.use(function (req, res, next) {
   // Request headers you wish to allow
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "X-Requested-With,content-type"
+    "X-Requested-With,content-type,Access-Control-Allow-Origin"
   );
   // Set to true if you need the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
-  res.setHeader("Access-Control-Allow-Credentials", true);
+  res.setHeader("Access-Control-Allow-Credentials", "true");
   // Pass to next layer of middleware
   next();
 });
@@ -85,13 +93,19 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
+  console.log("here in serializeUser");
   done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
   try {
+    console.log("here in deserializeUser");
     const user = await User.findById(id);
-    //console.log(user);
+    // .populate("friends")
+    // .populate("friend_requests_incoming")
+    // .populate("friend_requests_outgoing")
+    // .populate("posts");
+    console.log(user);
     done(null, user);
   } catch (err) {
     done(err);
