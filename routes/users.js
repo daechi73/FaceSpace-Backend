@@ -5,7 +5,6 @@ const userController = require("../controllers/usersController");
 /* GET users listing. */
 
 router.get("/", userController.user_get_users);
-router.get("/resign_in", userController.user_resign_in);
 router.get("/sign_out", userController.user_sign_out);
 router.get("/:id", userController.user_get_user_detail);
 router.post("/other_users", userController.user_get_other_users);
