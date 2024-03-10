@@ -64,7 +64,7 @@ app.use(function (req, res, next) {
   // Request headers you wish to allow
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "X-Requested-With,content-type,Access-Control-Allow-Origin"
+    "X-Requested-With,content-type,Access-Control-Allow-Origin,Accept,Cache"
   );
   // Set to true if you need the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
@@ -100,12 +100,11 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
   try {
     console.log("here in deserializeUser");
-    const user = await User.findById(id);
-    // .populate("friends")
-    // .populate("friend_requests_incoming")
-    // .populate("friend_requests_outgoing")
-    // .populate("posts");
-    console.log(user);
+    const user = await User.findById(id)
+      .populate("friends")
+      .populate("friend_requests_incoming")
+      .populate("friend_requests_outgoing")
+      .populate("posts");
     done(null, user);
   } catch (err) {
     done(err);
