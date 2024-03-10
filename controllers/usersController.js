@@ -28,6 +28,7 @@ exports.user_get_user_detail = asyncHandler(async (req, res, next) => {
     .populate("friend_requests_incoming")
     .populate("friend_requests_outgoing")
     .populate("posts");
+  //console.log(user);
   if (user === null) {
     const err = new Error("User not found");
     err.status = 404;
@@ -38,19 +39,33 @@ exports.user_get_user_detail = asyncHandler(async (req, res, next) => {
 });
 exports.user_sign_in = [
   asyncHandler(async (req, res, next) => {
-    passport.authenticate("local", (err, user, options) => {
+    passport.authenticate("local", async (err, user, options) => {
       if (!user) {
         return res.json("Log in failed, try again");
       }
-      req.login(user, (err) => {
+      req.login(user, async (err) => {
         if (err) return next(err);
-        console.log(req.user);
+        const userData = await User.findById(req.user._id)
+          .select("-password")
+          .populate("friends")
+          .populate("friend_requests_incoming")
+          .populate("friend_requests_outgoing")
+          .populate("posts");
+        console.log(userData);
+
         return res.json({
           status: "success",
-          user: { ...user._doc, password: "*********" },
+          user: userData,
         });
       });
     })(req, res, next);
+  }),
+];
+exports.user_resign_in = [
+  asyncHandler(async (req, res, next) => {
+    console.log(req);
+    if (req.user) return res.json("signedIn");
+    return res.json("not signed in");
   }),
 ];
 exports.user_sign_out = asyncHandler(async (req, res, next) => {
@@ -174,19 +189,27 @@ exports.user_update = [
 ];
 exports.user_update_add_friend = asyncHandler(async (req, res, next) => {
   const [signedInUser, toAddUser] = await Promise.all([
-    User.findById(req.params.id).exec(),
+    User.findById(req.params.id)
+      .where("friend_requests_outgoing")
+      .ne(req.body.toAddUserId)
+      .populate("friends")
+      .populate("friend_requests_incoming")
+      .populate("friend_requests_outgoing")
+      .populate("posts")
+      .exec(),
     User.findById(req.body.toAddUserId).exec(),
   ]);
 
   if (!signedInUser) {
-    if (!toAddUser) return res.json("Both Users are not found");
-    return res.json("User doesn't exist");
+    return res.json({ status: "failed", msg: "user already added" });
   }
-  if (!toAddUser) return res.json("user to add cannot be found in database");
+  if (!toAddUser) return res.json("added user is not found in database");
 
   signedInUser.friend_requests_outgoing.push(toAddUser);
   toAddUser.friend_requests_incoming.push(signedInUser);
-  console.log(signedInUser);
-  console.log(toAddUser);
-  res.json(signedInUser);
+  await Promise.all([signedInUser.save(), toAddUser.save()]);
+  return res.json({
+    status: "success",
+    user: { ...signedInUser._doc, password: "********" },
+  });
 });
