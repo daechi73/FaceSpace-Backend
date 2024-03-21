@@ -50,16 +50,16 @@ async function userCreate(
   users[index] = user;
   console.log(`added user: ${user.name} ${user.user_name}`);
 }
-async function commentCreate(index, user, date_added, comment) {
-  const commentObj = new Comment({
-    user: user,
-    date_added: date_added,
-    comment: comment,
-  });
-  await commentObj.save();
-  comments[index] = commentObj;
-  console.log(`added comment from ${user.user_name}`);
-}
+// async function commentCreate(index, user, date_added, comment) {
+//   const commentObj = new Comment({
+//     user: user,
+//     date_added: date_added,
+//     comment: comment,
+//   });
+//   await commentObj.save();
+//   comments[index] = commentObj;
+//   console.log(`added comment from ${user.user_name}`);
+// }
 
 async function hashedPass2(password) {
   const result = await bcrypt.hash(password, 10);
