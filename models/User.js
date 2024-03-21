@@ -8,20 +8,7 @@ const UserSchema = new Schema({
   email: { type: String, required: true, maxLength: 40 },
   bio: { type: String, maxLength: 400 },
   friends: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
-  friend_requests_incoming: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-  ],
-  friend_requests_outgoing: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-  ],
+  friend_requests: [{ type: Schema.Types.ObjectId, ref: "Friend_request" }],
   posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
 });
 
