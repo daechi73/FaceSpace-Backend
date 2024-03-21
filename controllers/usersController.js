@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/User");
+const FriendReq = require("../models/FriendRequest.js");
 const passport = require("passport");
 const { body, validationResult } = require("express-validator");
 const Hash = require("../public/javascript/Hash.js");
@@ -25,8 +26,7 @@ exports.user_get_user_detail = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id)
     .select("-password")
     .populate("friends")
-    .populate("friend_requests_incoming")
-    .populate("friend_requests_outgoing")
+    .populate("friend_requests")
     .populate("posts");
   //console.log(user);
   if (user === null) {
@@ -48,8 +48,7 @@ exports.user_sign_in = [
         const userData = await User.findById(req.user._id)
           .select("-password")
           .populate("friends")
-          .populate("friend_requests_incoming")
-          .populate("friend_requests_outgoing")
+          .populate("friend_requests")
           .populate("posts");
         console.log(userData);
 
@@ -188,28 +187,47 @@ exports.user_update = [
   }),
 ];
 exports.user_update_add_friend = asyncHandler(async (req, res, next) => {
-  const [signedInUser, toAddUser] = await Promise.all([
-    User.findById(req.params.id)
-      .where("friend_requests_outgoing")
-      .ne(req.body.toAddUserId)
-      .populate("friends")
-      .populate("friend_requests_incoming")
-      .populate("friend_requests_outgoing")
-      .populate("posts")
-      .exec(),
+  let [signedInUser, toAddUser] = await Promise.all([
+    User.findById(req.params.id).exec(),
     User.findById(req.body.toAddUserId).exec(),
   ]);
-
-  if (!signedInUser) {
+  const checkIfUserAdded = () => {
+    for (let i = 0; signedInUser.friend_requests.length; i++) {
+      if (
+        signedInUser.friend_requests.inbound[i] === req.body.toAddUserId ||
+        signedInUser.friend_requests.outbound[i] === req.body.toAddUserId
+      )
+        return true;
+    }
+  };
+  if (checkIfUserAdded) {
     return res.json({ status: "failed", msg: "user already added" });
   }
   if (!toAddUser) return res.json("added user is not found in database");
 
-  signedInUser.friend_requests_outgoing.push(toAddUser);
-  toAddUser.friend_requests_incoming.push(signedInUser);
-  await Promise.all([signedInUser.save(), toAddUser.save()]);
+  const friendRequest = new FriendReq({
+    outbound: signedInUser,
+    inbound: toAddUser,
+  });
+  signedInUser.friend_requests.push(friendRequest);
+  toAddUser.friend_requests.push(friendRequest);
+  await Promise.all([
+    friendRequest.save(),
+    signedInUser.save(),
+    toAddUser.save(),
+  ]);
+  [signedInUser, toAddUser] = await Promise.all([
+    User.findById(req.params.id)
+      .populate("friend_requests")
+      .populate("friends")
+      .populate("posts")
+      .exec(),
+    User.findById(req.body.toAddUserId).exec(),
+  ]);
+  console.log(signedInUser);
+  console.log(toAddUser);
   return res.json({
     status: "success",
-    user: { ...signedInUser._doc, password: "********" },
+    user: signedInUser,
   });
 });
