@@ -214,7 +214,7 @@ exports.user_update = [
     });
   }),
 ];
-exports.user_update_add_friend = asyncHandler(async (req, res, next) => {
+exports.user_update_add_friendRequest = asyncHandler(async (req, res, next) => {
   let [signedInUser, toAddUser] = await Promise.all([
     User.findById(req.params.id).populate("friend_requests").exec(),
     User.findById(req.body.toAddUserId).exec(),
