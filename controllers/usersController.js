@@ -282,3 +282,69 @@ exports.user_update_add_friendRequest = asyncHandler(async (req, res, next) => {
     user: signedInUser,
   });
 });
+
+exports.user_update_add_friend = asyncHandler(async (req, res, next) => {
+  //console.log(req.body.friendReq);
+  const [signedInUser, otherUser] = await Promise.all([
+    User.findById(req.params.id)
+      .where("friends")
+      .ne(req.body.friendReq.outbound)
+      .populate("friend_requests")
+      .exec(),
+    User.findById(req.body.friendReq.outbound).populate("friend_requests"),
+  ]);
+  if (signedInUser === null) {
+    return res.json({
+      status: "failed",
+      msg: "User Already added as friend",
+    });
+  }
+  if (otherUser === null) {
+    return res.json({
+      status: "failed",
+      msg: `User ${req.body.friendReq.outbound.user_name} is not in the database`,
+    });
+  }
+  signedInUser.friends.push(otherUser);
+  otherUser.friends.push(signedInUser);
+
+  //removes friendreq from signedInUser
+  for (let i = 0; i < signedInUser.friend_requests.length; i++) {
+    if (signedInUser.friend_requests[i].id === req.body.friendReq._id) {
+      signedInUser.friend_requests.splice(i, 1);
+      console.log(
+        `Friend Req ${req.body.friendReq._id} erased from signedInUser`
+      );
+    }
+  }
+  //removes friendReq from otherUser
+  for (let i = 0; i < otherUser.friend_requests.length; i++) {
+    if (otherUser.friend_requests[i].id === req.body.friendReq._id) {
+      otherUser.friend_requests.splice(i, 1);
+      console.log(
+        `Friend Req ${req.body.friendReq._id} erased from other User`
+      );
+    }
+  }
+  await Promise.all([signedInUser.save(), otherUser.save()]);
+  const updatedSignedInUser = await User.findById(req.params.id)
+    .populate({
+      path: "friend_requests",
+      populate: [
+        {
+          path: "outbound",
+          model: "User",
+          select: "-password",
+        },
+        {
+          path: "inbound",
+          model: "User",
+          select: "-password",
+        },
+      ],
+    })
+    .populate("friends")
+    .populate("posts")
+    .select("-password");
+  res.json({ status: "success", user: updatedSignedInUser });
+});
