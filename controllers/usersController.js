@@ -22,7 +22,7 @@ exports.user_get_other_users = asyncHandler(async (req, res, next) => {
   if (users) res.json({ status: "success", users: users });
   else res.json({ status: "faliure" });
 });
-exports.user_get_user_detail = asyncHandler(async (req, res, next) => {
+exports.user_get_user_detail_with_id = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id)
     .select("-password")
     .populate("friends")
@@ -51,6 +51,32 @@ exports.user_get_user_detail = asyncHandler(async (req, res, next) => {
 
   res.json({ status: "success", user: user });
 });
+exports.user_get_user_detail_with_username = asyncHandler(
+  async (req, res, next) => {
+    const user = await User.find({ user_name: req.params.username })
+      .select("-password")
+      .populate("friends")
+      .populate({
+        path: "friend_requests",
+        populate: [
+          {
+            path: "outbound",
+            model: "User",
+            select: "-password",
+          },
+          {
+            path: "inbound",
+            model: "User",
+            select: "-password",
+          },
+        ],
+      })
+      .populate("posts");
+    if (user.length === 0)
+      return res.json({ status: "failed", msg: "user not found" });
+    res.json({ status: "success", user: user[0] });
+  }
+);
 exports.user_sign_in = [
   asyncHandler(async (req, res, next) => {
     passport.authenticate("local", async (err, user, options) => {
