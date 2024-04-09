@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const ChatBoxSchema = new Schema({
   users: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
-  date_created: { type: Date },
+  date_created: { type: Date, default: Date.now },
   messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
 });
 

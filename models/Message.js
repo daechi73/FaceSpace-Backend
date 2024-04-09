@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const MessageSchema = new Schema({
   sender: { type: Schema.Types.ObjectId, ref: "User", required: true },
   receiver: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  date_sent: { type: Date },
+  date_sent: { type: Date, default: Date.now },
   message: { type: String, required: true, minLength: 1, maxLength: 1000 },
 });
 
