@@ -425,3 +425,29 @@ exports.user_update_decline_friendReq = asyncHandler(async (req, res, next) => {
     .select("-password");
   res.json({ status: "success", user: updatedSignedInUser });
 });
+
+exports.user_update_add_chatbox = asyncHandler(async (req, res, next) => {
+  const [sender, receiver] = await Promise.all([
+    User.findById(req.params.id).exec(),
+    User.findById(req.body.chatbox.receiver).exec(),
+  ]);
+  if (sender === null || receiver === null)
+    return res.json({ status: "failure" });
+  const newSender = new User({
+    ...sender,
+    chat: sender.chat.push(req.body.chatbox),
+    _id: sender._id,
+  });
+  const newReceiver = new User({
+    ...receiver,
+    chat: sender.chat.push(req.body.chatbox),
+    _id: receiver._id,
+  });
+  await Promise.all([newSender.save, newReceiver.save]);
+
+  return res.json({
+    status: "success",
+    newSignedInUser: newSender,
+    msg: "message sent successfully",
+  });
+});
