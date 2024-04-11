@@ -18,6 +18,7 @@ router.post(
   "/:id/update/addFriendReq",
   userController.user_update_add_friendRequest
 );
+router.post("/:id/update/addChatbox", userController.user_update_add_chatbox);
 router.post("/:id/update/addFriend", userController.user_update_add_friend);
 router.post(
   "/:id/update/declineFriendReq",
