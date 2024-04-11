@@ -18,11 +18,13 @@ exports.chatbox_add_message = [
     const existingChatbox = await ChatBox.find({
       users: { $in: [req.body.message.sender, req.body.message.receiver] },
     });
-    if (existingChatbox !== null || existingChatbox !== undefined) {
-      existingChatbox.messages.push(message);
-      await existingChatbox.save();
+
+    if (existingChatbox.length !== 0) {
+      existingChatbox[0].messages.push(req.body.message);
+      await existingChatbox[0].save();
       return res.json({ status: "success", msg: "added messages to chatbox" });
     }
+
     const users = [req.body.message.sender, req.body.message.receiver];
     const chatbox = new ChatBox({
       users: users,
