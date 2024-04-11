@@ -21,13 +21,17 @@ exports.message_create = [
       User.findById(req.body.sender).exec(),
       User.find({ user_name: req.body.receiver }),
     ]);
-    if (sender === null || receiver[0] === null)
-      res.json({ status: "failed", msg: "cant find one of the users" });
+    if (sender === null)
+      return res.json({ status: "failed", msg: "cant find signedInUser " });
+    if (receiver[0] === null)
+      return res.json({ status: "failed", msg: "cant find other user" });
+
     const message = new Message({
+      receiver: receiver[0],
       sender: sender,
-      receiver: receiver,
-      message: req.body.message,
+      message: req.body.msg,
     });
+
     await message.save();
     return res.json({
       status: "success",
