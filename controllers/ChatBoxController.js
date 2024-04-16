@@ -12,7 +12,9 @@ exports.chatbox_get_all = asyncHandler(async (req, res, next) => {
     msg: "Retreiving all chatboxes success",
   });
 });
-
+// exports.chatbox_get_chatbox = asyncHandler(async(req,res,next)=>{
+//   const chatbox = await ChatBox.find()
+// })
 exports.chatbox_add_message = [
   asyncHandler(async (req, res, next) => {
     const existingChatbox = await ChatBox.find({
