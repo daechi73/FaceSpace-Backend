@@ -10,6 +10,7 @@ const UserSchema = new Schema({
   friends: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
   friend_requests: [{ type: Schema.Types.ObjectId, ref: "Friend_request" }],
   posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
+  chatbox: [{ type: Schema.Types.ObjectId, ref: "ChatBox" }],
 });
 
 UserSchema.virtual("url").get(function () {

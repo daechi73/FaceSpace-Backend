@@ -443,7 +443,7 @@ exports.user_update_add_chatbox = asyncHandler(async (req, res, next) => {
     chat: sender.chat.push(req.body.chatbox),
     _id: receiver._id,
   });
-  await Promise.all([newSender.save, newReceiver.save]);
+  //await Promise.all([newSender.save(), newReceiver.save()]);
 
   return res.json({
     status: "success",
