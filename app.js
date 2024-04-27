@@ -10,6 +10,8 @@ const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcryptjs");
 const User = require("./models/User.js");
 require("dotenv").config();
+const http = require("http");
+const { Server } = require("socket.io");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -58,7 +60,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   // Request methods you wish to allow
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -113,6 +115,25 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
+// socket.io handlers
+// const server = http.createServer(app);
+// const io = new Server(server, {
+//   cors: { origin: "http://localhost:5173", methods: ["GET", "POST"] },
+// });
+
+// io.on("connection", (socket) => {
+//   console.log(`a user connected ${socket.id}`);
+//   socket.emit("testing", "working?");
+//   socket.on("send_message", (data) => {
+//     socket.broadcast.emit("receive_message", data);
+//   });
+// });
+
+// save server and io to app
+// app.set("customServer", server);
+// app.set("socketio", io);
+
+//routing
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/posts", postsRouter);
