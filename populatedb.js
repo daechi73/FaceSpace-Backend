@@ -4,6 +4,7 @@ console.log("This SCript populates users and comments to the database");
 
 const userArgs = process.argv.slice(2);
 //mongodb+srv://<username>:<password>@cluster0.o5wrez4.mongodb.net/faceSpace?retryWrites=true&w=majority
+
 const bcrypt = require("bcryptjs");
 const User = require("./models/User");
 
