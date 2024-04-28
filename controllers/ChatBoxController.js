@@ -20,24 +20,57 @@ exports.chatbox_add_message = [
     const existingChatbox = await ChatBox.find({
       users: { $all: [req.body.message.sender, req.body.message.receiver] },
     });
+    console.log("existing chatbox");
+    console.log(existingChatbox);
 
     if (existingChatbox.length !== 0) {
       const updatedMessages = existingChatbox[0].messages;
-
+      console.log("updatedMessage before update");
+      console.log(updatedMessages);
       updatedMessages.push(req.body.message);
+      console.log("updatedMessage after update");
+      console.log(updatedMessages);
+
+      console.log("existingChatbox[0]");
+      console.log(existingChatbox[0]);
+
       const chatbox = new ChatBox({
-        ...existingChatbox,
-        messages: updatedMessages,
         _id: existingChatbox[0]._id,
+        users: existingChatbox[0].users,
+        messages: updatedMessages,
       });
-      // existingChatbox[0].messages.push(req.body.message);
-      // await existingChatbox[0].save();
+      console.log("newChatbox");
+      console.log(chatbox);
+
+      //Old alternaive
+      //
+      // // existingChatbox[0].messages.push(req.body.message);
+      // // await existingChatbox[0].save();
+
       const updatedChatbox = await ChatBox.findByIdAndUpdate(
         existingChatbox[0]._id,
         chatbox,
         {}
-      ).populate("messages");
-
+      )
+        .populate({
+          path: "messages",
+          model: "Message",
+          populate: [
+            {
+              path: "sender",
+              model: "User",
+              select: "-password",
+            },
+            {
+              path: "receiver",
+              model: "User",
+              select: "-password",
+            },
+          ],
+        })
+        .populate({ path: "users", model: "User", select: "-password" });
+      console.log("updatedChatbox: ");
+      console.log(updatedChatbox);
       return res.json({
         status: "success",
         msg: "added messages to chatbox",
@@ -47,7 +80,7 @@ exports.chatbox_add_message = [
     }
 
     const users = [req.body.message.sender, req.body.message.receiver];
-    console.log(users);
+    //console.log(users);
     const chatbox = new ChatBox({
       users: users,
       messages: req.body.message,
