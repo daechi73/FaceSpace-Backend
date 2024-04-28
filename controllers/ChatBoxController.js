@@ -41,7 +41,7 @@ exports.chatbox_add_message = [
         existingChatbox[0]._id,
         chatbox,
         {}
-      
+      )
         .populate({
           path: "messages",
           model: "Message",
