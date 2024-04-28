@@ -11,6 +11,7 @@ router.get(
   userController.user_get_user_detail_with_username
 );
 router.get("/:id", userController.user_get_user_detail_with_id);
+router.get("/getChatbox/:id/:otherUsername", userController.user_get_chatbox);
 router.post("/other_users", userController.user_get_other_users);
 router.post("/sign_in", userController.user_sign_in);
 router.post("/sign_up", userController.user_sign_up);
