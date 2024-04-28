@@ -18,25 +18,47 @@ exports.chatbox_get_all = asyncHandler(async (req, res, next) => {
 exports.chatbox_add_message = [
   asyncHandler(async (req, res, next) => {
     const existingChatbox = await ChatBox.find({
-      users: { $in: [req.body.message.sender, req.body.message.receiver] },
+      users: { $all: [req.body.message.sender, req.body.message.receiver] },
     });
 
     if (existingChatbox.length !== 0) {
-      existingChatbox[0].messages.push(req.body.message);
-      await existingChatbox[0].save();
-      return res.json({ status: "success", msg: "added messages to chatbox" });
+      const updatedMessages = existingChatbox[0].messages;
+
+      updatedMessages.push(req.body.message);
+      const chatbox = new ChatBox({
+        ...existingChatbox,
+        messages: updatedMessages,
+        _id: existingChatbox[0]._id,
+      });
+      // existingChatbox[0].messages.push(req.body.message);
+      // await existingChatbox[0].save();
+      const updatedChatbox = await ChatBox.findByIdAndUpdate(
+        existingChatbox[0]._id,
+        chatbox,
+        {}
+      ).populate("messages");
+
+      return res.json({
+        status: "success",
+        msg: "added messages to chatbox",
+        chatbox: updatedChatbox,
+        method: "added",
+      });
     }
 
     const users = [req.body.message.sender, req.body.message.receiver];
+    console.log(users);
     const chatbox = new ChatBox({
       users: users,
       messages: req.body.message,
     });
+    console.log(chatbox);
     await chatbox.save();
     return res.json({
       status: "success",
       chatbox: chatbox,
       msg: "chatbox created successfully",
+      method: "created",
     });
   }),
 ];
