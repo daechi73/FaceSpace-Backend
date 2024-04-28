@@ -77,6 +77,26 @@ exports.user_get_user_detail_with_username = asyncHandler(
     res.json({ status: "success", user: user[0] });
   }
 );
+exports.user_get_chatbox = asyncHandler(async (req, res, next) => {
+  const [signedInUser, otherUser] = await Promise.all([
+    User.findById(req.params.id).populate("chatbox").exec(),
+    User.find({ user_name: req.params.otherUsername }),
+  ]);
+  if (signedInUser === null) return res.json("signedInUSer not found");
+  if (otherUser === null) return res.json("otherUser not found");
+  if (signedInUser.chatbox.length === 0)
+    return res.json({ status: "failed", msg: "There are no active chatboxes" });
+  for (let i = 0; i < signedInUser.chatbox.length; i++) {
+    for (let j = 0; j < signedInUser.chatbox[i].users.length; j++) {
+      if (signedInUser.chatbox[i].users[j].id === otherUser.id)
+        return res.json({
+          status: "success",
+          chatbox: signedInUser.chatbox[i],
+        });
+    }
+  }
+  return res.json({ status: "failed", msg: "chatbox not found" });
+});
 exports.user_sign_in = [
   asyncHandler(async (req, res, next) => {
     passport.authenticate("local", async (err, user, options) => {
@@ -433,21 +453,32 @@ exports.user_update_add_chatbox = asyncHandler(async (req, res, next) => {
   ]);
   if (sender === null || receiver === null)
     return res.json({ status: "failure" });
+
+  let newChat = sender.chat;
+  newChat.push(req.body.chatbox);
+
   const newSender = new User({
     ...sender,
-    chat: sender.chat.push(req.body.chatbox),
+    chat: newChat,
     _id: sender._id,
   });
+
+  newChat = receiver.chat;
+  newChat.push(req.body.chatbox);
+
   const newReceiver = new User({
     ...receiver,
-    chat: sender.chat.push(req.body.chatbox),
+    chat: newChat,
     _id: receiver._id,
   });
   await Promise.all([newSender.save(), newReceiver.save()]);
 
+  const updatedUser = await User.findByIdAndUpdate(sender._id, newSender, {});
+  await User.findByIdAndUpdate(receiver.id, newReceiver, {});
+
   return res.json({
     status: "success",
-    user: newSender,
+    user: updatedUser,
     chatbox: req.body.chatbox,
     msg: "message sent successfully",
   });
