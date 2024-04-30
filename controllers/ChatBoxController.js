@@ -38,7 +38,7 @@ exports.chatbox_add_message = [
       const updatedChatbox = await ChatBox.findByIdAndUpdate(
         existingChatbox[0]._id,
         chatbox,
-        {}
+        { new: true }
       )
         .populate({
           path: "messages",
