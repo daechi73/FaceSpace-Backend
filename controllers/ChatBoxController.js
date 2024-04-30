@@ -20,8 +20,6 @@ exports.chatbox_add_message = [
     const existingChatbox = await ChatBox.find({
       users: { $all: [req.body.message.sender, req.body.message.receiver] },
     });
-    console.log("existing chatbox");
-    console.log(existingChatbox);
 
     if (existingChatbox.length !== 0) {
       const updatedMessages = existingChatbox[0].messages;
@@ -73,7 +71,7 @@ exports.chatbox_add_message = [
       users: users,
       messages: req.body.message,
     });
-    console.log(chatbox);
+
     await chatbox.save();
     return res.json({
       status: "success",
