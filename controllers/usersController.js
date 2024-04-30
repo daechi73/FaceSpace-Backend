@@ -509,7 +509,9 @@ exports.user_update_add_chatbox = asyncHandler(async (req, res, next) => {
   });
   console.log(newSender);
   //await Promise.all([newSender.save(), newReceiver.save()]);
-  const updatedUser = await User.findByIdAndUpdate(sender._id, newSender, {});
+  const updatedUser = await User.findByIdAndUpdate(sender._id, newSender, {
+    new: true,
+  });
   await User.findByIdAndUpdate(receiver.id, newReceiver, {});
   console.log(updatedUser);
   return res.json({
@@ -518,5 +520,4 @@ exports.user_update_add_chatbox = asyncHandler(async (req, res, next) => {
     chatbox: req.body.chatbox,
     msg: "message sent successfully",
   });
-  return res.json({ status: "devmode", msg: "working on it" });
 });
