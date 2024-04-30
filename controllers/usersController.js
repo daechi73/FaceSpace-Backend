@@ -79,23 +79,46 @@ exports.user_get_user_detail_with_username = asyncHandler(
 );
 exports.user_get_chatbox = asyncHandler(async (req, res, next) => {
   const [signedInUser, otherUser] = await Promise.all([
-    User.findById(req.params.id).populate("chatbox").exec(),
+    User.findById(req.params.id)
+      .populate({
+        path: "chatbox",
+        populate: [
+          {
+            path: "messages",
+            model: "Message",
+          },
+        ],
+      })
+      .exec(),
     User.find({ user_name: req.params.otherUsername }),
   ]);
+
   if (signedInUser === null) return res.json("signedInUSer not found");
-  if (otherUser === null) return res.json("otherUser not found");
+  if (otherUser[0] === null) return res.json("otherUser not found");
+
   if (signedInUser.chatbox.length === 0)
-    return res.json({ status: "failed", msg: "There are no active chatboxes" });
+    return res.json({ status: "failed", msg: "You have no active chatbox" });
   for (let i = 0; i < signedInUser.chatbox.length; i++) {
     for (let j = 0; j < signedInUser.chatbox[i].users.length; j++) {
-      if (signedInUser.chatbox[i].users[j].id === otherUser.id)
+      const userIdString = JSON.stringify(signedInUser.chatbox[i].users[j]);
+      const otherUserIdString = JSON.stringify(otherUser[0].id);
+      if (userIdString === otherUserIdString) {
         return res.json({
           status: "success",
+          msg: "Chatbox Found",
           chatbox: signedInUser.chatbox[i],
         });
+      }
     }
+    return res.json({
+      status: "failed",
+      msg: "Chatbox doesn't exist between the two users",
+    });
   }
-  return res.json({ status: "failed", msg: "chatbox not found" });
+  return res.json({
+    status: "failed",
+    msg: "chatbox not found",
+  });
 });
 exports.user_sign_in = [
   asyncHandler(async (req, res, next) => {
@@ -449,37 +472,51 @@ exports.user_update_decline_friendReq = asyncHandler(async (req, res, next) => {
 exports.user_update_add_chatbox = asyncHandler(async (req, res, next) => {
   const [sender, receiver] = await Promise.all([
     User.findById(req.params.id).exec(),
-    User.findById(req.body.chatbox.receiver).exec(),
+    User.findById(req.body.chatbox.users[1]).exec(),
   ]);
+
   if (sender === null || receiver === null)
     return res.json({ status: "failure" });
 
-  let newChat = sender.chat;
+  let newChat = sender.chatbox;
   newChat.push(req.body.chatbox);
-
   const newSender = new User({
-    ...sender,
-    chat: newChat,
     _id: sender._id,
+    user_name: sender.user_name,
+    password: sender.password,
+    name: sender.name,
+    email: sender.email,
+    bio: sender.bio,
+    friends: sender.friends,
+    friend_requests: sender.friend_requests,
+    posts: sender.posts,
+    chatbox: newChat,
   });
 
-  newChat = receiver.chat;
+  newChat = receiver.chatbox;
   newChat.push(req.body.chatbox);
-
   const newReceiver = new User({
-    ...receiver,
-    chat: newChat,
     _id: receiver._id,
+    user_name: receiver.user_name,
+    password: receiver.password,
+    name: receiver.name,
+    email: receiver.email,
+    bio: receiver.bio,
+    friends: receiver.friends,
+    friend_requests: receiver.friend_requests,
+    posts: receiver.posts,
+    chatbox: newChat,
   });
-  await Promise.all([newSender.save(), newReceiver.save()]);
-
+  console.log(newSender);
+  //await Promise.all([newSender.save(), newReceiver.save()]);
   const updatedUser = await User.findByIdAndUpdate(sender._id, newSender, {});
   await User.findByIdAndUpdate(receiver.id, newReceiver, {});
-
+  console.log(updatedUser);
   return res.json({
     status: "success",
     user: updatedUser,
     chatbox: req.body.chatbox,
     msg: "message sent successfully",
   });
+  return res.json({ status: "devmode", msg: "working on it" });
 });
