@@ -110,10 +110,6 @@ exports.user_get_chatbox = asyncHandler(async (req, res, next) => {
         });
       }
     }
-    return res.json({
-      status: "failed",
-      msg: "Chatbox doesn't exist between the two users",
-    });
   }
   return res.json({
     status: "failed",
