@@ -6,6 +6,7 @@ const MessageSchema = new Schema({
   receiver: { type: Schema.Types.ObjectId, ref: "User", required: true },
   date_sent: { type: Date, default: Date.now },
   message: { type: String, required: true, minLength: 1, maxLength: 1000 },
+  read: { type: Boolean, default: false },
 });
 
 MessageSchema.virtual("url").get(function () {
