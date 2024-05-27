@@ -39,8 +39,8 @@ exports.chatbox_add_message = [
         existingChatbox[0]._id,
         chatbox,
         { new: true }
-      )
-        .populate({
+      ).populate([
+        {
           path: "messages",
           model: "Message",
           populate: [
@@ -55,8 +55,9 @@ exports.chatbox_add_message = [
               select: "-password",
             },
           ],
-        })
-        .populate({ path: "users", model: "User", select: "-password" });
+        },
+        { path: "users", model: "User", select: "-password" },
+      ]);
       return res.json({
         status: "success",
         msg: "added messages to chatbox",
@@ -73,6 +74,26 @@ exports.chatbox_add_message = [
     });
 
     await chatbox.save();
+    await chatbox.populate([
+      {
+        path: "messages",
+        model: "Message",
+        populate: [
+          {
+            path: "sender",
+            model: "User",
+            select: "-password",
+          },
+          {
+            path: "receiver",
+            model: "User",
+            select: "-password",
+          },
+        ],
+      },
+      { path: "users", model: "User", select: "-password" },
+    ]);
+
     return res.json({
       status: "success",
       chatbox: chatbox,
