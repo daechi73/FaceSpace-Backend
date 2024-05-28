@@ -81,7 +81,17 @@ exports.user_get_user_detail_with_username = asyncHandler(
           },
         ],
       })
-      .populate("posts");
+      .populate("posts")
+      .populate({
+        path: "chatbox",
+        populate: [
+          {
+            path: "users",
+            model: "User",
+            select: "user_name",
+          },
+        ],
+      });
     if (user.length === 0)
       return res.json({ status: "failed", msg: "user not found" });
     res.json({ status: "success", user: user[0] });
