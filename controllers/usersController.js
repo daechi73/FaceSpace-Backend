@@ -41,7 +41,17 @@ exports.user_get_user_detail_with_id = asyncHandler(async (req, res, next) => {
         },
       ],
     })
-    .populate("posts");
+    .populate("posts")
+    .populate({
+      path: "chatbox",
+      populate: [
+        {
+          path: "users",
+          model: "User",
+          select: "user_name",
+        },
+      ],
+    });
   //console.log(user);
   if (user === null) {
     const err = new Error("User not found");
