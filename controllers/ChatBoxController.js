@@ -32,6 +32,7 @@ exports.chatbox_add_message = [
         _id: existingChatbox[0]._id,
         users: existingChatbox[0].users,
         messages: updatedMessages,
+        new_message: req.body.message.sender.user_name,
       });
       //Old alternaive
       //
@@ -73,6 +74,7 @@ exports.chatbox_add_message = [
     const chatbox = new ChatBox({
       users: users,
       messages: req.body.message,
+      new_message: req.body.message.sender.user_name,
     });
 
     await chatbox.save();
@@ -104,3 +106,27 @@ exports.chatbox_add_message = [
     });
   }),
 ];
+
+// exports.chatbox_update_newMessage = asyncHandler(async (req, res, next) => {
+//   const chatbox = await ChatBox.findById(req.params.id).exec();
+//   if (chatbox === null)
+//     return res.json({
+//       status: "failed",
+//       msg: "couldn't find chatbox",
+//     });
+
+//   const updatedChatbox = new chatbox({
+//     users: chatbox.users,
+//     date_created: chatbox.date_created,
+//     messages: chatbox.messages,
+//     new_message: req.body.new_message,
+//     _id: chatbox._id,
+//   });
+
+//   await updatedChatbox.save();
+
+//   return res.json({
+//     status: "success",
+//     msg: "chatbox new_message property updated",
+//   });
+// });
