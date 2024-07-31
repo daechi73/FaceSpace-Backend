@@ -19,13 +19,14 @@ const CommentSchema = new Schema({
   },
 });
 
-CommentSchema.set("toJSON", { virtuals: true });
-
 CommentSchema.virtual("url").get(function () {
   return `/comments/${this._id}`;
 });
+
 CommentSchema.virtual("dated_posted_formatted").get(function () {
-  return DateTime.fromJSDate(this.due_back).toLocaleString(DATETIME_MED); // format 'YYYY-MM-DD'
+  return DateTime.fromJSDate(this.date_posted).toLocaleString(DateTime.MED); // format 'YYYY-MM-DD'
 });
+
+CommentSchema.set("toJSON", { virtuals: true });
 
 module.exports = mongoose.model("Comment", CommentSchema);

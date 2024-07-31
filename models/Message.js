@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { DateTime } = require("luxon");
 const Schema = mongoose.Schema;
 
 const MessageSchema = new Schema({
@@ -11,6 +12,10 @@ const MessageSchema = new Schema({
 
 MessageSchema.virtual("url").get(function () {
   return `/messages/${this._id}`;
+});
+
+MessageSchema.virtual("dated_posted_formatted").get(function () {
+  return DateTime.fromJSDate(this.date_sent).toLocaleString(DateTime.MED); // format 'YYYY-MM-DD'
 });
 
 MessageSchema.set("toJSON", { virtuals: true });

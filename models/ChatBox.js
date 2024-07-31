@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { DateTime } = require("luxon");
 const Schema = mongoose.Schema;
 
 const ChatBoxSchema = new Schema({
@@ -12,6 +13,10 @@ ChatBoxSchema.virtual("url").get(function () {
   return `/chatBox/${this._id}`;
 });
 
+ChatBoxSchema.virtual("dated_posted_formatted").get(function () {
+  return DateTime.fromJSDate(this.date_created).toLocaleString(DateTime.MED); // format 'YYYY-MM-DD'
+});
+
 ChatBoxSchema.set("toJSON", { virtuals: true });
-``;
+
 module.exports = mongoose.model("ChatBox", ChatBoxSchema);
