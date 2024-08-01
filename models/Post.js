@@ -6,7 +6,7 @@ const PostSchema = new Schema({
   posted_user: { type: Schema.Types.ObjectId, ref: "User", required: true },
   date_posted: { type: Date, default: Date.now },
   post_content: { type: String, required: true, maxLength: 500 },
-  likes: [{ type: Schema.Types.ObjectId, ref: "User", default: 0 }],
+  likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
   comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
 });
 
