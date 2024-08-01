@@ -19,5 +19,4 @@ PostSchema.virtual("dated_posted_formatted").get(function () {
 
 PostSchema.set("toJSON", { virtuals: true });
 
-PostSchema.set("toJSON", { virtuals: true });
 module.exports = mongoose.model("Post", PostSchema);
