@@ -5,7 +5,6 @@ const { body, validationResult } = require("express-validator");
 
 exports.posts_get_posts = asyncHandler(async (req, res, next) => {
   const posts = await Post.find().populate("posted_user");
-  console.log(posts.dated_posted_formatted);
   if (posts.length !== 0) {
     return res.json({
       status: "success",
