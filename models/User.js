@@ -9,7 +9,10 @@ const UserSchema = new Schema({
   bio: { type: String, maxLength: 400 },
   friends: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
   friend_requests: [{ type: Schema.Types.ObjectId, ref: "Friend_request" }],
-  profileWall: { type: Schema.Types.ObjectId, ref: "ProfileWall," },
+  profileWall: {
+    type: Schema.Types.ObjectId,
+    ref: "ProfileWall,",
+  },
   chatbox: [{ type: Schema.Types.ObjectId, ref: "ChatBox" }],
 });
 
