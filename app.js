@@ -20,6 +20,7 @@ const commentsRouter = require("./routes/comments");
 const friendRequestRouter = require("./routes/friendRequests.js");
 const messageRouter = require("./routes/messages.js");
 const chatboxesRouter = require("./routes/chatboxes.js");
+const profileWallRouter = require("./routes/profileWall.js");
 
 const mongoose = require("mongoose");
 
@@ -141,6 +142,7 @@ app.use("/comments", commentsRouter);
 app.use("/friendRequests", friendRequestRouter);
 app.use("/messages", messageRouter);
 app.use("/chatboxes", chatboxesRouter);
+app.use("/profileWalls", profileWallRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
