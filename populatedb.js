@@ -7,9 +7,11 @@ const userArgs = process.argv.slice(2);
 
 const bcrypt = require("bcryptjs");
 const User = require("./models/User");
+const ProfileWall = require("./models/ProfileWall");
 
 const comments = [];
 const users = [];
+const profileWalls = [];
 
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
@@ -23,6 +25,7 @@ async function main() {
   await mongoose.connect(mongoDB);
   console.log("Debug: Should be connected?");
   await createUsers();
+  // await createProfileWall();
   //await createComments();
   console.log("Debug: Closing mongoose");
   mongoose.connection.close();
@@ -46,10 +49,27 @@ async function userCreate(
     bio: bio,
   });
 
-  await user.save();
+  const profileWall = new ProfileWall({
+    user: user,
+    posts: [],
+  });
+  user.profileWall = profileWall;
+
+  await Promise.all([user.save(), profileWall.save()]);
   users[index] = user;
   console.log(`added user: ${user.name} ${user.user_name}`);
 }
+
+// async function profileWallCreate(index, user) {
+//   const profileWall = new ProfileWall({
+//     user: user,
+//     posts: [],
+//   });
+
+//   await profileWall.save();
+//   profileWalls[index] = profileWall;
+//   console.log(`added: ${profileWall.user.name}'s profileWall`);
+// }
 // async function commentCreate(index, user, date_added, comment) {
 //   const commentObj = new Comment({
 //     user: user,
@@ -103,6 +123,17 @@ async function createUsers() {
     ),
   ]);
 }
+
+// async function createProfileWall() {
+//   console.log("adding ProfileWalls");
+
+//   await Promise.all([
+//     profileWallCreate(0, users[0]),
+//     profileWallCreate(1, users[1]),
+//     profileWallCreate(2, users[2]),
+//     profileWallCreate(3, users[3]),
+//   ]);
+// }
 
 // async function createComments() {
 //     console.log("creating Comments..");
