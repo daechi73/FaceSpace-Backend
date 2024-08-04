@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/User");
 const FriendReq = require("../models/FriendRequest.js");
+const ProfileWall = require("../models/ProfileWall.js");
 const passport = require("passport");
 const { body, validationResult } = require("express-validator");
 const Hash = require("../public/javascript/Hash.js");
@@ -232,6 +233,13 @@ exports.user_sign_up = [
       email: req.body.email,
       bio: req.body.bio,
     });
+
+    const profileWall = new ProfileWall({
+      user: user,
+      posts: [],
+    });
+
+    user.profileWall = profileWall;
     if (!errors.isEmpty()) {
       return res.json({
         status: "failed",
@@ -241,6 +249,7 @@ exports.user_sign_up = [
     }
     user.password = await Hash(user.password);
     await user.save();
+    await profileWall.save();
     res.json({ status: "success", user: user });
   }),
 ];
