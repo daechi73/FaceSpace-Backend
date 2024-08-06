@@ -4,7 +4,10 @@ const User = require("../models/User");
 const { body, validationResult } = require("express-validator");
 
 exports.posts_get_posts = asyncHandler(async (req, res, next) => {
-  const posts = await Post.find().populate("posted_user");
+  const posts = await Post.find().populate({
+    path: "posted_user",
+    select: "-password",
+  });
   if (posts.length !== 0) {
     return res.json({
       status: "success",
