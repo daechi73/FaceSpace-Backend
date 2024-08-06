@@ -42,7 +42,7 @@ exports.user_get_user_detail_with_id = asyncHandler(async (req, res, next) => {
         },
       ],
     })
-    .populate("posts")
+    .populate("profileWall")
     .populate({
       path: "chatbox",
       populate: [
@@ -82,7 +82,7 @@ exports.user_get_user_detail_with_username = asyncHandler(
           },
         ],
       })
-      .populate("posts")
+      .populate("profileWall")
       .populate({
         path: "chatbox",
         populate: [
@@ -163,7 +163,7 @@ exports.user_sign_in = [
               },
             ],
           })
-          .populate("posts");
+          .populate("profileWall");
         console.log(userData);
 
         return res.json({
@@ -365,7 +365,7 @@ exports.user_update_add_friendRequest = asyncHandler(async (req, res, next) => {
         ],
       })
       .populate("friends")
-      .populate("posts")
+      .populate("profileWall")
       .exec(),
     User.findById(req.body.toAddUserId).exec(),
   ]);
@@ -439,7 +439,7 @@ exports.user_update_add_friend = asyncHandler(async (req, res, next) => {
       ],
     })
     .populate("friends")
-    .populate("posts")
+    .populate("profileWall")
     .select("-password");
   res.json({ status: "success", user: updatedSignedInUser });
 });
@@ -489,7 +489,7 @@ exports.user_update_decline_friendReq = asyncHandler(async (req, res, next) => {
       ],
     })
     .populate("friends")
-    .populate("posts")
+    .populate("profileWall")
     .select("-password");
   res.json({ status: "success", user: updatedSignedInUser });
 });
