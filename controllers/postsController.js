@@ -21,7 +21,7 @@ exports.posts_get_posts = asyncHandler(async (req, res, next) => {
   }
 });
 
-exports.posts_post_posts = [
+exports.posts_post_posts_main = [
   body("post")
     .exists({ values: "falsy" })
     .withMessage("You must have some input to submit a post"),
@@ -38,9 +38,9 @@ exports.posts_post_posts = [
       posted_user: req.body.user,
       post_content: req.body.post,
     });
-    postedUser.posts.push(post);
+
     console.log(postedUser);
-    await Promise.all([post.save(), postedUser.save()]);
+    await post.save();
     return res.json({ status: "success", msg: "Post successfully added" });
   }),
 ];
