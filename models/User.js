@@ -11,7 +11,7 @@ const UserSchema = new Schema({
   friend_requests: [{ type: Schema.Types.ObjectId, ref: "Friend_request" }],
   profileWall: {
     type: Schema.Types.ObjectId,
-    ref: "ProfileWall,",
+    ref: "ProfileWall",
   },
   chatbox: [{ type: Schema.Types.ObjectId, ref: "ChatBox" }],
 });
