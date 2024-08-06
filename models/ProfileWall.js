@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const ProfileWallSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  posts: [{ type: String, maxLength: 500, minLength: 5 }],
+  posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
 });
 
 ProfileWallSchema.virtual("url").get(function () {
