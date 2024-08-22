@@ -60,8 +60,11 @@ exports.posts_post_posts_profileWall = [
       });
     }
 
-    const postedUser = await User.find({ user: req.body.user_id });
-    if (postedUser === null)
+    const [profileWall] = await Promise.all([
+      ProfileWall.findbyId(req.body.user.profileWall).populate("posts"),
+    ]);
+
+    if (profileWall === null)
       return console.log(
         "Given User not found in posts_post_posts_profileWall"
       );
@@ -69,8 +72,8 @@ exports.posts_post_posts_profileWall = [
       posted_user: req.body.user,
       post_content: req.body.post,
     });
-    postedUser.profileWall.push(post);
-    await Promise.all([post.save(), postedUser.save()]);
+    profileWall.push(post);
+    await Promise.all([post.save(), profileWall.save()]);
     return res.json({ status: "success", msg: "Post Successfully added" });
   }),
 ];
