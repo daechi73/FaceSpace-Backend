@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Post = require("../models/Post");
 const User = require("../models/User");
+const ProfileWall = require("../models/ProfileWall");
 const { body, validationResult } = require("express-validator");
 
 exports.posts_get_posts = asyncHandler(async (req, res, next) => {
@@ -27,7 +28,7 @@ exports.posts_post_posts_main = [
     .withMessage("You must have some input to submit a post"),
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
-    const postedUser = await User.findById(req.body.user.id);
+
     if (!errors.isEmpty()) {
       return res.json({
         status: "failure",
@@ -39,8 +40,37 @@ exports.posts_post_posts_main = [
       post_content: req.body.post,
     });
 
-    console.log(postedUser);
     await post.save();
     return res.json({ status: "success", msg: "Post successfully added" });
+  }),
+];
+
+exports.posts_post_posts_profileWall = [
+  body("post")
+    .exists({ values: "falsy" })
+    .withMessage("You must have some input to submit a post"),
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.json({
+        status: "failed",
+        msg: "error/s occured in the request",
+        errors: errors.array(),
+      });
+    }
+
+    const postedUser = await User.find({ user: req.body.user_id });
+    if (postedUser === null)
+      return console.log(
+        "Given User not found in posts_post_posts_profileWall"
+      );
+    const post = new Post({
+      posted_user: req.body.user,
+      post_content: req.body.post,
+    });
+    postedUser.profileWall.push(post);
+    await Promise.all([post.save(), postedUser.save()]);
+    return res.json({ status: "success", msg: "Post Successfully added" });
   }),
 ];
