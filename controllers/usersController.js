@@ -42,7 +42,6 @@ exports.user_get_user_detail_with_id = asyncHandler(async (req, res, next) => {
         },
       ],
     })
-    .populate("profileWall")
     .populate({
       path: "chatbox",
       populate: [
