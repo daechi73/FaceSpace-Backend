@@ -83,7 +83,15 @@ exports.profileWall_insert_post = asyncHandler(async (req, res, next) => {
       profileWall._id,
       newProfileWall,
       { new: true }
-    ).populate("posts");
+    ).populate({
+      path: "posts",
+      model: "Post",
+      populate: {
+        path: "posted_user",
+        model: "User",
+        select: "-password",
+      },
+    });
     return res.json({
       status: "success",
       msg: "profileWall updated successfully",
@@ -124,7 +132,15 @@ exports.profileWall_delete_post = asyncHandler(async (req, res, next) => {
         {
           new: true,
         }
-      ).populate("posts");
+      ).populate({
+        path: "posts",
+        model: "Post",
+        populate: {
+          path: "posted_user",
+          model: "User",
+          select: "-password",
+        },
+      });
       res.json({
         status: "Success",
         msg: "Post deleted from Profile Wall",

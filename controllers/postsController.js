@@ -62,7 +62,7 @@ exports.posts_post_posts_profileWall = [
 
     try {
       const [profileWall] = await Promise.all([
-        ProfileWall.findById(req.body.profileWall).populate("posts"),
+        ProfileWall.findById(req.body.profileWall),
       ]);
 
       if (profileWall === null)
@@ -73,12 +73,32 @@ exports.posts_post_posts_profileWall = [
         posted_user: req.body.user,
         post_content: req.body.post,
       });
-      profileWall.posts.push(post);
-      await Promise.all([post.save(), profileWall.save()]);
+      const newProfileWall = new ProfileWall({
+        _id: profileWall._id,
+        user: profileWall.user,
+        posts: profileWall.posts,
+      });
+
+      newProfileWall.posts.push(post);
+
+      await post.save();
+      const updatedProfileWall = await ProfileWall.findByIdAndUpdate(
+        profileWall._id,
+        newProfileWall,
+        { new: true }
+      ).populate({
+        path: "posts",
+        model: "Post",
+        populate: {
+          path: "posted_user",
+          model: "User",
+          select: "-password",
+        },
+      });
       return res.json({
         status: "success",
         msg: "Post Successfully added",
-        profileWall: profileWall,
+        profileWall: updatedProfileWall,
       });
     } catch (error) {
       console.log(error);
