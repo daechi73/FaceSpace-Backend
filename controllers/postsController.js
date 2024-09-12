@@ -22,6 +22,16 @@ exports.posts_get_posts = asyncHandler(async (req, res, next) => {
   }
 });
 
+exports.posts_get_post = asyncHandler(async (req, res, next) => {
+  const post = await Post.findById(req.params.id).exec();
+  if (post === null) return console.log("post not found");
+  return res.json({
+    status: "Success",
+    msg: "Post returned successfully",
+    post: post,
+  });
+});
+
 exports.posts_post_posts_main = [
   body("post")
     .exists({ values: "falsy" })
@@ -105,3 +115,19 @@ exports.posts_post_posts_profileWall = [
     }
   }),
 ];
+
+exports.posts_post_delete = asyncHandler(async (req, res, next) => {
+  try {
+    const post = await Post.findById(req.params.id).exec();
+    if (post === null) return console.log("post not found");
+
+    console.log(req.params.id);
+    await Post.findByIdAndDelete(req.params.id);
+    return res.json({
+      status: "Success",
+      msg: "Post Removed Successfully",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
