@@ -116,7 +116,7 @@ exports.posts_post_posts_profileWall = [
   }),
 ];
 
-exports.posts_post_delete = asyncHandler(async (req, res, next) => {
+exports.posts_delete_post = asyncHandler(async (req, res, next) => {
   try {
     const post = await Post.findById(req.params.id).exec();
     if (post === null) return console.log("post not found");
