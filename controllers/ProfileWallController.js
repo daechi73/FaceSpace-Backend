@@ -70,37 +70,37 @@ exports.profileWall_create = [
   }),
 ];
 
-exports.profileWall_insert_post = asyncHandler(async (req, res, next) => {
-  try {
-    const profileWall = await ProfileWall.findById(req.body.profileWallId);
-    if (profileWall === null) return console.log("profileWall doesn't exist");
-    profileWall.posts.push(req.body.post);
-    const newProfileWall = new ProfileWall({
-      user: profileWall.user,
-      posts: profileWall.posts,
-    });
-    const updatedProfileWall = await ProfileWall.findIdAndUpdate(
-      profileWall._id,
-      newProfileWall,
-      { new: true }
-    ).populate({
-      path: "posts",
-      model: "Post",
-      populate: {
-        path: "posted_user",
-        model: "User",
-        select: "-password",
-      },
-    });
-    return res.json({
-      status: "success",
-      msg: "profileWall updated successfully",
-      profileWall: updatedProfileWall,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-});
+// exports.profileWall_insert_post = asyncHandler(async (req, res, next) => {
+//   try {
+//     const profileWall = await ProfileWall.findById(req.body.profileWallId);
+//     if (profileWall === null) return console.log("profileWall doesn't exist");
+//     profileWall.posts.push(req.body.post);
+//     const newProfileWall = new ProfileWall({
+//       user: profileWall.user,
+//       posts: profileWall.posts,
+//     });
+//     const updatedProfileWall = await ProfileWall.findIdAndUpdate(
+//       profileWall._id,
+//       newProfileWall,
+//       { new: true }
+//     ).populate({
+//       path: "posts",
+//       model: "Post",
+//       populate: {
+//         path: "posted_user",
+//         model: "User",
+//         select: "-password",
+//       },
+//     });
+//     return res.json({
+//       status: "success",
+//       msg: "profileWall updated successfully",
+//       profileWall: updatedProfileWall,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
 
 exports.profileWall_delete_post = asyncHandler(async (req, res, next) => {
   const [profileWall] = await Promise.all([
