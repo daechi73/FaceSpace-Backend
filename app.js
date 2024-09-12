@@ -108,8 +108,7 @@ passport.deserializeUser(async (id, done) => {
     console.log("here in deserializeUser");
     const user = await User.findById(id)
       .populate("friends")
-      .populate("friend_requests")
-      .populate("posts");
+      .populate("friend_requests");
     done(null, user);
   } catch (err) {
     done(err);
