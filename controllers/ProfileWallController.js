@@ -120,7 +120,7 @@ exports.profileWall_delete_post = asyncHandler(async (req, res, next) => {
     if (updatingProfileWall.posts[i].id == req.body.postid) {
       //console.log(updatingProfileWall.posts[i]);
       deleted = true;
-      updatingProfileWall.posts.splice(i, i);
+      updatingProfileWall.posts.splice(i, 1);
       break;
     }
   }
