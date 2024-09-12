@@ -7,6 +7,6 @@ router.get("/:id", postsController.posts_get_post);
 
 router.post("/postMain", postsController.posts_post_posts_main);
 router.post("/postProfileWall", postsController.posts_post_posts_profileWall);
-router.post("/:id/delete", postsController.posts_post_delete);
+router.post("/:id/delete", postsController.posts_delete_post);
 
 module.exports = router;
