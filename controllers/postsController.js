@@ -120,7 +120,6 @@ exports.posts_delete_post = asyncHandler(async (req, res, next) => {
   try {
     const post = await Post.findById(req.params.id).exec();
     if (post === null) return console.log("post not found");
-
     await Post.findByIdAndDelete(req.params.id);
     return res.json({
       status: "Success",
