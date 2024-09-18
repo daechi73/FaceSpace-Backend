@@ -118,13 +118,20 @@ exports.posts_post_posts_profileWall = [
 
 exports.posts_delete_post = asyncHandler(async (req, res, next) => {
   try {
-    const post = await Post.findById(req.params.id).exec();
+    const [post, user] = await Promise.all([
+      Post.findById(req.params.id).populate("posted_user"),
+      User.findById(req.body.signedInUserId).exec(),
+    ]);
     if (post === null) return console.log("post not found");
-    await Post.findByIdAndDelete(req.params.id);
-    return res.json({
-      status: "Success",
-      msg: "Post Removed Successfully",
-    });
+    if (user === null) return console.log("post not found");
+
+    if (post.posted_user.id === user.id) {
+      await Post.findByIdAndDelete(req.params.id);
+      return res.json({
+        status: "Success",
+        msg: "Post Removed Successfully",
+      });
+    }
   } catch (error) {
     console.log(error);
   }
