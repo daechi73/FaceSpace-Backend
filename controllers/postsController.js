@@ -137,7 +137,7 @@ exports.posts_delete_post = asyncHandler(async (req, res, next) => {
       User.findById(req.body.signedInUserId).exec(),
     ]);
     if (post === null) return console.log("post not found");
-    if (user === null) return console.log("post not found");
+    if (user === null) return console.log("user not found");
 
     if (post.posted_user.id === user.id) {
       await Post.findByIdAndDelete(req.params.id);
