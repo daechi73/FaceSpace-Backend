@@ -3,6 +3,7 @@ const router = express.Router();
 const postsController = require("../controllers/postsController");
 
 router.get("/", postsController.posts_get_posts);
+router.get("/:id/userPosts", postsController.posts_get_user_posts);
 router.get("/:id", postsController.posts_get_post);
 
 router.post("/postMain", postsController.posts_post_posts_main);
