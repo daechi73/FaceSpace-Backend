@@ -32,6 +32,20 @@ exports.posts_get_post = asyncHandler(async (req, res, next) => {
   });
 });
 
+exports.posts_get_user_posts = asyncHandler(async (req, res, next) => {
+  const posts = await Post.find({ posted_user: req.params.id })
+    .populate({ path: "posted_user", select: "-password" })
+    .populate("likes")
+    .populate("comments");
+
+  if (posts.length === 0) console.log("post not found");
+  return res.json({
+    status: "Success",
+    msg: "User's posts returned successfully",
+    posts: posts,
+  });
+});
+
 exports.posts_post_posts_main = [
   body("post")
     .exists({ values: "falsy" })
