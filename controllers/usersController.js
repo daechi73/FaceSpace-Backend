@@ -26,7 +26,7 @@ exports.user_get_other_users = asyncHandler(async (req, res, next) => {
 exports.user_get_user_detail_with_id = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id)
     .select("-password")
-    .populate("friends")
+    .populate({ path: "friends", select: "-password" })
     .populate({
       path: "friend_requests",
       populate: [
@@ -65,7 +65,7 @@ exports.user_get_user_detail_with_username = asyncHandler(
   async (req, res, next) => {
     const user = await User.find({ user_name: req.params.username })
       .select("-password")
-      .populate("friends")
+      .populate({ path: "friends", select: "-password" })
       .populate({
         path: "friend_requests",
         populate: [
@@ -146,7 +146,7 @@ exports.user_sign_in = [
         if (err) return next(err);
         const userData = await User.findById(req.user._id)
           .select("-password")
-          .populate("friends")
+          .populate({ path: "friends", select: "-password" })
           .populate({
             path: "friend_requests",
             populate: [
@@ -363,7 +363,7 @@ exports.user_update_add_friendRequest = asyncHandler(async (req, res, next) => {
           },
         ],
       })
-      .populate("friends")
+      .populate({ path: "friends", select: "-password" })
       .populate("profileWall")
       .exec(),
     User.findById(req.body.toAddUserId).exec(),
@@ -437,7 +437,7 @@ exports.user_update_add_friend = asyncHandler(async (req, res, next) => {
         },
       ],
     })
-    .populate("friends")
+    .populate({ path: "friends", select: "-password" })
     .populate("profileWall")
     .select("-password");
   res.json({ status: "success", user: updatedSignedInUser });
@@ -487,7 +487,7 @@ exports.user_update_decline_friendReq = asyncHandler(async (req, res, next) => {
         },
       ],
     })
-    .populate("friends")
+    .populate({ path: "friends", select: "-password" })
     .populate("profileWall")
     .select("-password");
   res.json({ status: "success", user: updatedSignedInUser });
