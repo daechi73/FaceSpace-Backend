@@ -76,23 +76,32 @@ exports.posts_post_posts_profileWall = [
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
 
+    const [profileWall] = await Promise.all([
+      ProfileWall.findById(req.body.profileWall).populate({
+        path: "posts",
+        model: "Post",
+        populate: {
+          path: "posted_user",
+          model: "User",
+          select: "-password",
+        },
+      }),
+    ]);
+    if (profileWall === null)
+      return console.log(
+        "Given profileWall not found in posts_post_posts_profileWall"
+      );
+
     if (!errors.isEmpty()) {
       return res.json({
         status: "failed",
         msg: "error/s occured in the request",
         errors: errors.array(),
+        profileWall: profileWall,
       });
     }
 
     try {
-      const [profileWall] = await Promise.all([
-        ProfileWall.findById(req.body.profileWall),
-      ]);
-
-      if (profileWall === null)
-        return console.log(
-          "Given profileWall not found in posts_post_posts_profileWall"
-        );
       const post = new Post({
         posted_user: req.body.user,
         post_content: req.body.post,
