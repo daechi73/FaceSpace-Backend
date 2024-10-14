@@ -64,10 +64,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
 
-  //production mode
-  res.setHeader("Access-Control-Allow-Origin", "https://daechi73.github.io");
+  // //production mode
+  // res.setHeader("Access-Control-Allow-Origin", "https://daechi73.github.io");
   //dev mode
-  // res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
   // Request methods you wish to allow
   res.setHeader(
     "Access-Control-Allow-Methods",
