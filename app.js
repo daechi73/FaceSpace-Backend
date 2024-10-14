@@ -55,7 +55,6 @@ app.use(
   })
 );
 
-console.log("testing git tests")
 
 //https://daechi73.github.io  
 app.use(passport.initialize());
