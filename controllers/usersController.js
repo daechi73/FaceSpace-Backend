@@ -224,6 +224,7 @@ exports.user_sign_up = [
     .isLength({ max: 400 })
     .withMessage("Password must be less than 50 letters"),
   asyncHandler(async (req, res, next) => {
+
     const errors = validationResult(req);
     const user = new User({
       user_name: req.body.username,
@@ -239,17 +240,29 @@ exports.user_sign_up = [
     });
 
     user.profileWall = profileWall;
-    if (!errors.isEmpty()) {
-      return res.json({
-        status: "failed",
-        user: user,
-        errors: errors.array(),
-      });
+    console.log("hereee")
+    try{
+      if (!errors.isEmpty()) {
+        console.log("errrrrror")
+        return res.json({
+          status: "failed",
+          user: user,
+          errors: errors.array(),
+        });
+      }
+  
+      user.password = await Hash(user.password);
+  
+      await user.save();
+      await profileWall.save();
+      console.log(user)
+      const updatedUser = await User.findById(user._id).exec();
+      res.json({ status: "success", user: updatedUser });
+  
+    }catch(error){
+      console.log(error)
     }
-    user.password = await Hash(user.password);
-    await user.save();
-    await profileWall.save();
-    res.json({ status: "success", user: user });
+
   }),
 ];
 
