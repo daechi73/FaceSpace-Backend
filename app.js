@@ -68,9 +68,9 @@ app.use(function (req, res, next) {
 
 
   // //production mode github
-  res.setHeader("Access-Control-Allow-Origin", "https://facespace.onrender.com");
+  //res.setHeader("Access-Control-Allow-Origin", "https://facespace.onrender.com");
   //dev mode
-  //res.setHeader("Access-Control-Allow-Origin", "http://localhost:4173");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
   // Request methods you wish to allow
   res.setHeader(
     "Access-Control-Allow-Methods",
