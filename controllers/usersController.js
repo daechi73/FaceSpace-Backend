@@ -196,7 +196,11 @@ exports.user_sign_up = [
     .isLength({ min: 4 })
     .withMessage("Username must be longer than 4 letters")
     .isLength({ max: 30 })
-    .withMessage("Username must be less than 30 letters"),
+    .withMessage("Username must be less than 30 letters")
+    .custom(async(username)=>{
+      const userCheck = User.find({user_name:username});
+      if(userCheck) throw new Error("Username already exists");
+    }),
   body("password")
     .trim()
     .exists({ values: "falsy" })
@@ -225,32 +229,38 @@ exports.user_sign_up = [
     .withMessage("Password must be less than 50 letters"),
   asyncHandler(async (req, res, next) => {
 
-    const errors = validationResult(req);
-    const user = new User({
-      user_name: req.body.username,
-      password: req.body.password,
-      name: req.body.name,
-      email: req.body.email,
-      bio: req.body.bio,
-    });
-
-    const profileWall = new ProfileWall({
-      user: user,
-      posts: [],
-    });
-
-    user.profileWall = profileWall;
-    console.log("hereee")
     try{
+    const errors = validationResult(req);
+
       if (!errors.isEmpty()) {
         console.log("errrrrror")
         return res.json({
           status: "failed",
-          user: user,
+          user: {
+            user_name: req.body.username,
+            password: req.body.password,
+            name: req.body.name,
+            email: req.body.email,
+            bio: req.body.bio,
+          },
           errors: errors.array(),
         });
       }
   
+
+      const user = new User({
+        user_name: req.body.username,
+        password: req.body.password,
+        name: req.body.name,
+        email: req.body.email,
+        bio: req.body.bio,
+      });
+      const profileWall = new ProfileWall({
+        user: user,
+        posts: [],
+      });
+      user.profileWall = profileWall;
+
       user.password = await Hash(user.password);
   
       await user.save();
