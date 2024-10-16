@@ -240,6 +240,7 @@ exports.user_sign_up = [
 
     user.profileWall = profileWall;
     if (!errors.isEmpty()) {
+      console.log("errrrrror")
       return res.json({
         status: "failed",
         user: user,
