@@ -10,6 +10,7 @@ router.get(
   "/username/:username",
   userController.user_get_user_detail_with_username
 );
+router.get("/checkPersist", userController.user_checkPersist);
 router.get("/:id", userController.user_get_user_detail_with_id);
 router.get("/getChatbox/:id/:otherUsername", userController.user_get_chatbox);
 router.post("/other_users", userController.user_get_other_users);

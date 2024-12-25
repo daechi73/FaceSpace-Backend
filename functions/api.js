@@ -49,10 +49,16 @@ app.use(bodyParser.json());
 
 app.use(
   session({
-    secret: "cats",
+    secret: "faceSpceSecretCats",
     resave: false,
-    saveUninitialized: true,
-    cookies: {},
+    saveUninitialized: false,
+    cookies: {
+      httpOnly: true,
+      secure: true,
+      rolling: false,
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "none",
+    },
   })
 );
 
@@ -115,10 +121,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
-    console.log("here in deserializeUser");
-    const user = await User.findById(id)
-      .populate("friends")
-      .populate("friend_requests");
+    const user = await User.findById(id);
     done(null, user);
   } catch (err) {
     done(err);

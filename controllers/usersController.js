@@ -6,6 +6,15 @@ const passport = require("passport");
 const { body, validationResult } = require("express-validator");
 const Hash = require("../public/javascript/Hash.js");
 
+exports.user_checkPersist = asyncHandler((req, res, next) => {
+  if (req.user) {
+    const newUser = req.user.toObject();
+    delete newUser.password;
+    console.log(req.session);
+    return res.json({ persist: true, user: newUser });
+  }
+  return res.json({ persist: false });
+});
 exports.user_get_users = asyncHandler(async (req, res, next) => {
   const users = await User.find().exec();
   if (users)
@@ -197,9 +206,9 @@ exports.user_sign_up = [
     .withMessage("Username must be longer than 4 letters")
     .isLength({ max: 30 })
     .withMessage("Username must be less than 30 letters")
-    .custom(async(username)=>{
-      const userCheck = User.find({user_name:username});
-      if(userCheck) throw new Error("Username already exists");
+    .custom(async (username) => {
+      const userCheck = User.find({ user_name: username });
+      if (userCheck) throw new Error("Username already exists");
     }),
   body("password")
     .trim()
@@ -228,12 +237,11 @@ exports.user_sign_up = [
     .isLength({ max: 400 })
     .withMessage("Password must be less than 50 letters"),
   asyncHandler(async (req, res, next) => {
-
-    try{
-    const errors = validationResult(req);
+    try {
+      const errors = validationResult(req);
 
       if (!errors.isEmpty()) {
-        console.log("errrrrror")
+        console.log("errrrrror");
         return res.json({
           status: "failed",
           user: {
@@ -246,7 +254,6 @@ exports.user_sign_up = [
           errors: errors.array(),
         });
       }
-  
 
       const user = new User({
         user_name: req.body.username,
@@ -262,17 +269,15 @@ exports.user_sign_up = [
       user.profileWall = profileWall;
 
       user.password = await Hash(user.password);
-  
+
       await user.save();
       await profileWall.save();
-      console.log(user)
+      console.log(user);
       const updatedUser = await User.findById(user._id).exec();
       res.json({ status: "success", user: updatedUser });
-  
-    }catch(error){
-      console.log(error)
+    } catch (error) {
+      console.log(error);
     }
-
   }),
 ];
 
