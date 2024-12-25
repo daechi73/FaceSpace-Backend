@@ -172,7 +172,6 @@ exports.user_sign_in = [
             ],
           })
           .populate("profileWall");
-        console.log(userData);
 
         return res.json({
           status: "success",
@@ -184,9 +183,45 @@ exports.user_sign_in = [
 ];
 exports.user_resign_in = [
   asyncHandler(async (req, res, next) => {
-    console.log(req);
-    if (req.user) return res.json("signedIn");
-    return res.json("not signed in");
+    if (req.user) {
+      // const updatedUser = req.user.toObject();
+      // delete updatedUser.password;
+      // console.log(updatedUser);
+      const user = await User.findById(req.user.id)
+        .select("-password")
+        .populate({ path: "friends", select: "-password" })
+        .populate({
+          path: "friend_requests",
+          populate: [
+            {
+              path: "outbound",
+              model: "User",
+              select: "-password",
+            },
+            {
+              path: "inbound",
+              model: "User",
+              select: "-password",
+            },
+          ],
+        })
+        .populate({
+          path: "chatbox",
+          populate: [
+            {
+              path: "users",
+              model: "User",
+              select: "user_name",
+            },
+          ],
+        });
+      return res.status(200).json({
+        status: "success",
+        user: user,
+        msg: "Auto Resign-In Success",
+      });
+    }
+    return res.status(200).json({ msg: "No previous session", status: "fail" });
   }),
 ];
 exports.user_sign_out = asyncHandler(async (req, res, next) => {
@@ -194,7 +229,11 @@ exports.user_sign_out = asyncHandler(async (req, res, next) => {
     if (err) {
       return next(err);
     }
-    res.json({ status: "success", user: req.user });
+    req.session.destroy((err) => {
+      if (err) return next(err);
+    });
+    res.clearCookie("connect.sid");
+    res.json({ status: "success", msg: "Log out success" });
   });
 });
 exports.user_sign_up = [
