@@ -276,7 +276,11 @@ exports.user_sign_up = [
     .isEmail()
     .withMessage("Must input a valid email address")
     .isLength({ max: 40 })
-    .withMessage("email must be less than 40 letters"),
+    .withMessage("email must be less than 40 letters")
+    .custom(async (email) => {
+      const user = await User.find({ email: email });
+      if (user.length !== 0) throw new Error("Email already in use.");
+    }),
   body("bio")
     .trim()
     .isLength({ max: 400 })
