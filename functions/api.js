@@ -13,6 +13,7 @@ const serverless = require("serverless-http");
 require("dotenv").config();
 const http = require("http");
 const { Server } = require("socket.io");
+const MongoStore = require("connect-mongo");
 
 var indexRouter = require("../routes/index");
 var usersRouter = require("../routes/users");
@@ -52,6 +53,10 @@ app.use(
     secret: "faceSpceSecretCats",
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: `mongodb+srv://${process.env.USER_NAME}:${process.env.PASS}@cluster0.o5wrez4.mongodb.net/faceSpace?retryWrites=true&w=majority`,
+      ttl: 24 * 60 * 60,
+    }),
     cookies: {
       httpOnly: true,
       secure: true,
