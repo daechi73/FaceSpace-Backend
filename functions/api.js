@@ -48,30 +48,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.json());
 
-app.use(
-  session({
-    secret: "faceSpceSecretCats",
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: `mongodb+srv://${process.env.USER_NAME}:${process.env.PASS}@cluster0.o5wrez4.mongodb.net/faceSpace?retryWrites=true&w=majority`,
-      ttl: 24 * 60 * 60,
-    }),
-    cookies: {
-      httpOnly: true,
-      secure: true,
-      rolling: false,
-      maxAge: 24 * 60 * 60 * 1000,
-      sameSite: "none",
-    },
-  })
-);
-
-//https://daechi73.github.io
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(express.urlencoded({ extended: false }));
-
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
 
@@ -132,6 +108,29 @@ passport.deserializeUser(async (id, done) => {
     done(err);
   }
 });
+
+app.use(
+  session({
+    secret: "faceSpceSecretCats",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: `mongodb+srv://${process.env.USER_NAME}:${process.env.PASS}@cluster0.o5wrez4.mongodb.net/faceSpace?retryWrites=true&w=majority`,
+      ttl: 24 * 60 * 60,
+    }),
+    cookie: {
+      httpOnly: true,
+      secure: true,
+      rolling: false,
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: "none",
+    },
+  })
+);
+
+//https://daechi73.github.io
+app.use(passport.initialize());
+app.use(passport.session());
 
 // socket.io handlers
 // const server = http.createServer(app);

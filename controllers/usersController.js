@@ -6,7 +6,7 @@ const passport = require("passport");
 const { body, validationResult } = require("express-validator");
 const Hash = require("../public/javascript/Hash.js");
 
-exports.user_checkPersist = asyncHandler((req, res, next) => {
+exports.user_checkPersist = asyncHandler(async (req, res, next) => {
   if (req.user) {
     const newUser = req.user.toObject();
     delete newUser.password;
@@ -14,6 +14,12 @@ exports.user_checkPersist = asyncHandler((req, res, next) => {
     return res.json({ persist: true, user: newUser });
   }
   return res.json({ persist: false });
+});
+exports.user_get_sessions = asyncHandler(async (req, res, next) => {
+  res.json({
+    session: req.session,
+    sessionStore: req.sessionStore,
+  });
 });
 exports.user_get_users = asyncHandler(async (req, res, next) => {
   const users = await User.find().exec();
@@ -221,7 +227,7 @@ exports.user_resign_in = [
         msg: "Auto Resign-In Success",
       });
     }
-    return res.status(200).json({ msg: "No previous session", status: "fail" });
+    return res.status(400).json({ msg: "No previous session", status: "fail" });
   }),
 ];
 exports.user_sign_out = asyncHandler(async (req, res, next) => {

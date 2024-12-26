@@ -12,6 +12,7 @@ router.get(
 );
 router.get("/sign_out", userController.user_sign_out);
 router.get("/checkPersist", userController.user_checkPersist);
+router.get("/checkSessions", userController.user_get_sessions);
 router.get("/resignIn", userController.user_resign_in);
 router.get("/:id", userController.user_get_user_detail_with_id);
 router.get("/getChatbox/:id/:otherUsername", userController.user_get_chatbox);
