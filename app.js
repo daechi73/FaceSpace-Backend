@@ -1,9 +1,9 @@
 var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
-const bodyParser = require("body-parser");
+// var express = require("express");
+// var path = require("path");
+// var cookieParser = require("cookie-parser");
+// var logger = require("morgan");
+// const bodyParser = require("body-parser");
 const session = require("express-session");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
@@ -13,6 +13,7 @@ require("dotenv").config();
 const http = require("http");
 const { Server } = require("socket.io");
 const MongoStore = require("connect-mongo");
+const app = require("./js/shareJs.js");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -34,18 +35,19 @@ main().catch((err) => console.log(err));
 async function main() {
   await mongoose.connect(mongodb);
 }
-var app = express();
+
+// var app = express();
 
 // view engine setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "jade");
+// app.set("views", path.join(__dirname, "views"));
+// app.set("view engine", "jade");
 
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
-app.use(bodyParser.json());
+// app.use(logger("dev"));
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));
+// app.use(cookieParser());
+// app.use(express.static(path.join(__dirname, "public")));
+// app.use(bodyParser.json());
 
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
@@ -128,25 +130,36 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.urlencoded({ extended: false }));
+// app.use(express.urlencoded({ extended: false }));
 
 // socket.io handlers
-// const server = http.createServer(app);
-// const io = new Server(server, {
-//   cors: { origin: "http://localhost:5173", methods: ["GET", "POST"] },
-// });
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: "http://localhost:5173", methods: ["GET", "POST"] },
+});
 
-// io.on("connection", (socket) => {
-//   console.log(`a user connected ${socket.id}`);
-//   socket.emit("testing", "working?");
-//   socket.on("send_message", (data) => {
-//     socket.broadcast.emit("receive_message", data);
-//   });
-// });
+io.on("connection", (socket) => {
+  console.log(`a user connected ${socket.id}`);
+  socket.emit("testing", "working?");
+  socket.on("send_message", (data) => {
+    socket.broadcast.emit("receive_message", data);
+  });
+  socket.on("disconnect", (reason) => {
+    console.log(`User ${socket.id} has disconnected`);
+  });
+});
+
+// let allSockets;
+// async function getAllSockets() {
+//   const allSockets = await io.allScokets;
+// }
+// getAllSockets();
+
+// console.log(allSockets);
 
 // save server and io to app
-// app.set("customServer", server);
-// app.set("socketio", io);
+app.set("customServer", server);
+app.set("socketio", io);
 
 //routing
 app.use("/", indexRouter);
