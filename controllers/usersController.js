@@ -10,6 +10,7 @@ exports.user_checkPersist = asyncHandler(async (req, res, next) => {
   if (req.user) {
     const newUser = req.user.toObject();
     delete newUser.password;
+    delete newUser.friends;
     console.log(req.session);
     return res.json({ persist: true, user: newUser });
   }
