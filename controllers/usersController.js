@@ -22,8 +22,35 @@ exports.user_get_sessions = asyncHandler(async (req, res, next) => {
   });
 });
 exports.user_get_users = asyncHandler(async (req, res, next) => {
-  const users = await User.find().exec();
-  if (users)
+  const users = await User.find()
+    .select("-password")
+    .populate({ path: "friends", select: "-password" })
+    .populate({
+      path: "friend_requests",
+      populate: [
+        {
+          path: "outbound",
+          model: "User",
+          select: "-password",
+        },
+        {
+          path: "inbound",
+          model: "User",
+          select: "-password",
+        },
+      ],
+    })
+    .populate({
+      path: "chatbox",
+      populate: [
+        {
+          path: "users",
+          model: "User",
+          select: "user_name",
+        },
+      ],
+    });
+  if (users.length !== 0)
     res.json({
       status: "success",
       users: users,
