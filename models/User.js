@@ -14,6 +14,7 @@ const UserSchema = new Schema({
     ref: "ProfileWall",
   },
   chatbox: [{ type: Schema.Types.ObjectId, ref: "ChatBox" }],
+  online: { type: String, required: true },
 });
 
 UserSchema.virtual("url").get(function () {
