@@ -140,7 +140,7 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   console.log(`a user connected ${socket.id}`);
-  socket.emit("testing", "working?");
+  // socket.emit("testing", "working?");
   socket.on("send_message", (data) => {
     socket.broadcast.emit("receive_message", data);
   });
